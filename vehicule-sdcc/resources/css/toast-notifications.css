@@ -1,0 +1,265 @@
+/* ==========================================
+   TOAST NOTIFICATION SYSTEM
+   Modern popup notifications with animations
+   ========================================== */
+
+/* Toast Container */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+/* Individual Toast Notification */
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    min-width: 280px;
+    max-width: 400px;
+    pointer-events: auto;
+    animation: slideInRight 0.3s ease-out forwards;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Toast dismiss animation */
+.toast.dismiss {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Toast Content */
+.toast-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toast-title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.toast-message {
+    font-weight: 400;
+    font-size: 13px;
+    opacity: 0.95;
+}
+
+/* Toast Icon */
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+    font-size: 18px;
+}
+
+/* Toast Close Button */
+.toast-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0;
+    color: inherit;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+/* ==========================================
+   TOAST VARIANTS
+   ========================================== */
+
+/* Success Toast - Green */
+.toast.success {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.toast.success .toast-icon {
+    font-size: 20px;
+    opacity: 1;
+}
+
+/* Error Toast - Red */
+.toast.error {
+    background: linear-gradient(135deg, #ff4757 0%, #ee5a6f 100%);
+    color: white;
+    border-color: rgba(255, 71, 87, 0.3);
+}
+
+.toast.error .toast-icon {
+    font-size: 20px;
+}
+
+/* Warning Toast - Orange */
+.toast.warning {
+    background: linear-gradient(135deg, #FFA726 0%, #ff9100 100%);
+    color: white;
+    border-color: rgba(255, 167, 38, 0.3);
+}
+
+.toast.warning .toast-icon {
+    font-size: 20px;
+}
+
+/* Info Toast - Blue */
+.toast.info {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    border-color: rgba(33, 150, 243, 0.3);
+}
+
+.toast.info .toast-icon {
+    font-size: 20px;
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translate(400px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+    to {
+        opacity: 0;
+        transform: translate(400px, 0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+    .toast-container {
+        top: 15px;
+        right: 15px;
+        left: 15px;
+    }
+
+    .toast {
+        min-width: unset;
+        width: 100%;
+        max-width: 100%;
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .toast-title {
+        font-size: 13px;
+    }
+
+    .toast-message {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        gap: 10px;
+    }
+
+    .toast {
+        padding: 10px 12px;
+        min-width: unset;
+        width: 100%;
+        gap: 10px;
+        font-size: 12px;
+    }
+
+    .toast-title {
+        font-size: 12px;
+    }
+
+    .toast-message {
+        font-size: 11px;
+    }
+
+    .toast-icon {
+        min-width: 20px;
+        min-height: 20px;
+        font-size: 16px;
+    }
+
+    .toast-close {
+        width: 24px;
+        height: 24px;
+        font-size: 16px;
+    }
+}
+
+/* ==========================================
+   PROGRESS BAR (OPTIONAL)
+   ========================================== */
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 0 0 8px 0;
+    animation: progress 4s linear forwards;
+}
+
+@keyframes progress {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}

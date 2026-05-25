@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Shadow filter -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#b71c1c" flood-opacity="0.35"/>
+    </filter>
+    <!-- Glossy highlight gradient -->
+    <radialGradient id="gloss" cx="42%" cy="30%" r="50%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Red circle base with shadow -->
+  <circle cx="50" cy="51" r="44" fill="#E53935" filter="url(#shadow)"/>
+
+  <!-- Glossy highlight -->
+  <circle cx="50" cy="51" r="44" fill="url(#gloss)"/>
+
+  <!-- White X — two rounded lines crossing at center -->
+  <!-- Line 1: top-left to bottom-right -->
+  <line x1="31" y1="32" x2="69" y2="70"
+        stroke="#ffffff" stroke-width="11"
+        stroke-linecap="round"/>
+  <!-- Line 2: top-right to bottom-left -->
+  <line x1="69" y1="32" x2="31" y2="70"
+        stroke="#ffffff" stroke-width="11"
+        stroke-linecap="round"/>
+</svg>

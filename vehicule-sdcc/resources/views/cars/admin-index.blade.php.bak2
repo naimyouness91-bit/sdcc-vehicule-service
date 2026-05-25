@@ -1,0 +1,589 @@
+<style>
+    .content-wrapper {
+        padding: 20px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        gap: 30px;
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 25%, #FFA726 75%, #FFA500 100%);
+        padding: 30px;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .page-header-info h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 8px;
+    }
+
+    .page-header-info p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+    }
+
+    .add-vehicle-btn {
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+        color: white;
+        border: 2px solid rgba(255,255,255, 0.5);
+        padding: 12px 28px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .add-vehicle-btn:hover {
+        background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+        border-color: rgba(255, 255, 255, 0.7);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid transparent;
+        border-image: linear-gradient(180deg, #4CAF50 0%, #FFA726 100%) 1;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 16px rgba(76, 175, 80, 0.15);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1a1a1a;
+    }
+
+    .filters-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .search-box {
+        flex: 1;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 13px;
+        transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: #4CAF50;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+    .vehicle-filter-btn {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s;
+        background: #f5f5f5;
+        color: #1a1a1a;
+    }
+
+    .vehicle-filter-btn.active {
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 25%, #FFA726 75%, #FFA500 100%);
+        color: white;
+    }
+
+    .vehicle-filter-btn:hover {
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 25%, #FFA726 75%, #FFA500 100%);
+        color: white;
+    }
+
+    .table-view {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #f9f9f9;
+    }
+
+    th {
+        text-align: left;
+        padding: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #eee;
+    }
+
+    td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 13px;
+    }
+
+    tbody tr:hover {
+        background: #f9f9f9;
+    }
+
+    .vehicle-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .vehicle-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 25%, #FFA726 75%, #FFA500 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .vehicle-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .vehicle-name {
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .vehicle-subtitle {
+        font-size: 11px;
+        color: #999;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .status-approved {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .status-maintenance {
+        background: #FFF3E0;
+        color: #E65100;
+    }
+
+    .action-btns {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #888;
+        font-size: 14px;
+        transition: color 0.3s;
+        padding: 5px 8px;
+    }
+
+    .action-btn:hover {
+        color: #4CAF50;
+    }
+
+    .action-btn.delete-btn:hover {
+        color: #F44336;
+    }
+
+    .alert-success {
+        background: #E8F5E9;
+        border: 1px solid #A5D6A7;
+        color: #2E7D32;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #999;
+        padding: 40px 20px;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 14px;
+    }
+
+    .empty-state p {
+        font-size: 15px;
+    }
+
+    .hidden-row {
+        display: none;
+    }
+
+    @media (max-width: 1024px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .add-vehicle-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .filters-section {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .content-wrapper {
+            padding: 15px;
+        }
+
+        .page-header {
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .page-header-info h1 {
+            font-size: 24px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 15px;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .content-wrapper {
+            padding: 12px;
+        }
+
+        .page-header {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-header-info h1 {
+            font-size: 20px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .filters-section {
+            flex-direction: column;
+        }
+
+        table {
+            font-size: 11px;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+    }
+</style>
+
+<div class="content-wrapper">
+    @if(session('success'))
+        <div class="alert-success">{{ session('success') }}</div>
+    @endif
+    @if($errors->has('car'))
+        <div class="alert-success" style="background:#ffebee;border-color:#ef9a9a;color:#b71c1c;">
+            {{ $errors->first('car') }}
+        </div>
+    @endif
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-info">
+            <h1>Gestion des Véhicules</h1>
+            <p>Flotte de véhicules SDCC</p>
+        </div>
+        <button class="add-vehicle-btn" id="addVehicleBtn">
+            <i class="fas fa-plus"></i> Ajouter un véhicule
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Flotte</div>
+            <div class="stat-value">{{ $cars->count() }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Disponibles</div>
+            <div class="stat-value">{{ $cars->where('status', 'disponible')->count() }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Maintenance</div>
+            <div class="stat-value">{{ $cars->where('status', 'maintenance')->count() }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">KM Total</div>
+            <div class="stat-value">{{ number_format($cars->sum('km'), 0, ',', ' ') }}</div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" class="vehicle-search" placeholder="Marque, modèle, matricule...">
+        </div>
+        <button class="vehicle-filter-btn active" data-filter="all">Tous</button>
+        @foreach($vehicleStatusOptions as $statusValue => $statusLabel)
+            <button class="vehicle-filter-btn" data-filter="{{ $statusValue }}">
+                @if($statusValue === 'disponible') ✓ @else ⚙ @endif {{ $statusLabel }}
+            </button>
+        @endforeach
+    </div>
+
+    <!-- Vehicles Table -->
+    <div class="table-view">
+        <div class="section-header">
+            <h3 class="section-title">Véhicules</h3>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Véhicule</th>
+                    <th>Matricule</th>
+                    <th>Version</th>
+                    <th>Année</th>
+                    <th>KM Total</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($cars as $car)
+                <tr data-status="{{ $car->status }}" data-search="{{ strtolower($car->name.' '.$car->model.' '.$car->matricule) }}" data-id="{{ $car->id }}">
+                    <td>
+                        <div class="vehicle-cell">
+                            <div class="vehicle-avatar">{{ strtoupper(substr($car->name, 0, 1)) }}</div>
+                            <div class="vehicle-info">
+                                <div class="vehicle-name">{{ $car->name }}</div>
+                                <div class="vehicle-subtitle">{{ $car->model }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ strtoupper($car->matricule) }}</td>
+                    <td>{{ $car->model }}</td>
+                    <td>{{ $car->year }}</td>
+                    <td>{{ number_format($car->km, 0, ',', ' ') }} km</td>
+                    <td>
+                        @if($car->status === 'disponible')
+                            <span class="status-badge status-approved"><i class="fas fa-check"></i> Disponible</span>
+                        @else
+                            <span class="status-badge status-maintenance"><i class="fas fa-clock"></i> Maintenance</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            @if($car->is_core)
+                                <span class="status-badge" style="background:#eceff1;color:#37474f;">Flotte fixe</span>
+                            @else
+                                <a href="{{ route('cars.edit', $car->id) }}" class="action-btn edit-btn" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <button class="action-btn delete-btn" title="Supprimer" data-url="{{ route('cars.destroy', $car->id) }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-inbox"></i> Aucun véhicule dans la flotte
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    @if(count($cars) == 0)
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>Aucun véhicule disponible</p>
+        </div>
+    @endif
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addVehicleBtn = document.getElementById('addVehicleBtn');
+        const searchInput = document.querySelector('.vehicle-search');
+        const filterButtons = document.querySelectorAll('.vehicle-filter-btn');
+        const rows = Array.from(document.querySelectorAll('tbody tr[data-id]'));
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+
+        let activeFilter = 'all';
+
+        if (addVehicleBtn) {
+            addVehicleBtn.addEventListener('click', function () {
+                window.location.href = "{{ route('cars.create') }}";
+            });
+        }
+
+        const applyFilters = () => {
+            const query = (searchInput?.value || '').trim().toLowerCase();
+
+            rows.forEach((row) => {
+                const status = row.dataset.status;
+                const text = row.dataset.search || '';
+                const statusMatch = activeFilter === 'all' || status === activeFilter;
+                const searchMatch = query === '' || text.includes(query);
+                row.classList.toggle('hidden-row', !(statusMatch && searchMatch));
+            });
+        };
+
+        filterButtons.forEach((button) => {
+            button.addEventListener('click', function () {
+                filterButtons.forEach((btn) => btn.classList.remove('active'));
+                this.classList.add('active');
+                activeFilter = this.dataset.filter;
+                applyFilters();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
+
+        deleteButtons.forEach((button) => {
+            button.addEventListener('click', function () {
+                const deleteUrl = this.dataset.url;
+                const confirmed = window.confirm('Supprimer ce véhicule ?');
+
+                if (!confirmed) {
+                    return;
+                }
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+                form.innerHTML = `
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_method" value="DELETE">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
+    });
+</script>

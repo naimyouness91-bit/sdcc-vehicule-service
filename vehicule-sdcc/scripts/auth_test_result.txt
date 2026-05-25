@@ -1,0 +1,24 @@
+2026-05-03T09:04:45.2939731+01:00 	 GET /login
+2026-05-03T09:04:46.2342152+01:00 	 CSRF token obtained
+2026-05-03T09:04:46.2382151+01:00 	 POST /login (authenticate admin@sdcc.ma)
+2026-05-03T09:04:48.0259475+01:00 	 Login response status: 200
+2026-05-03T09:04:48.0279480+01:00 	 GET /admin
+2026-05-03T09:04:49.3291247+01:00 	 /admin status: 200
+2026-05-03T09:04:49.3371211+01:00 	 GET /admin/reservations/create
+2026-05-03T09:04:50.0384672+01:00 	 /admin/reservations/create status: 200
+2026-05-03T09:04:50.0414683+01:00 	 Form CSRF token found
+2026-05-03T09:04:50.0544665+01:00 	 Query DB for available car
+2026-05-03T09:04:50.2243970+01:00 	 Available car id: 1
+2026-05-03T09:04:50.2404036+01:00 	 POST /admin/reservations (create)
+2026-05-03T09:04:51.5318898+01:00 	 Create response status: 200
+2026-05-03T09:04:51.5478829+01:00 	 Saved create response body to scripts/create_resp.html
+2026-05-03T09:04:51.7167261+01:00 	 Created demande id: 2
+2026-05-03T09:04:51.7187246+01:00 	 GET /admin/reservations/2/edit
+2026-05-03T09:04:52.4678052+01:00 	 Edit page status: 200
+2026-05-03T09:04:52.4707702+01:00 	 Edit form CSRF token found
+2026-05-03T09:04:52.4857522+01:00 	 POST (as PUT) /admin/reservations/2
+2026-05-03T09:04:54.1221747+01:00 	 Update response status: 200
+2026-05-03T09:04:54.1241325+01:00 	 POST (as DELETE) /admin/reservations/2
+2026-05-03T09:04:54.7423239+01:00 	 Delete response status: 200
+2026-05-03T09:04:54.8459181+01:00 	 No new ERROR/CRITICAL/Exception entries found in laravel.log tail
+2026-05-03T09:04:54.8489315+01:00 	 AUTH TESTS COMPLETED
