@@ -25,9 +25,25 @@ class ReservationFlowTest extends TestCase
     {
         $admin = User::where('email', 'superadmin@sdcc.ma')->first();
         $employee = User::where('email', '!=', 'superadmin@sdcc.ma')->first();
-        $car = Car::first();
+        $car = Car::query()->create([
+            'name' => 'Print Flow Car',
+            'matricule' => 'PRINT-001',
+            'model' => 'Test',
+            'year' => 2024,
+            'km' => 1000,
+            'status' => 'disponible',
+            'availability_type' => 'both',
+        ]);
 
         $this->actingAs($admin)
+            ->get(route('mes-demandes.create'))
+            ->assertOk()
+            ->assertDontSee('<button type="button" class="btn btn-print"', false)
+            ->assertDontSee('L’impression sera disponible juste après la soumission, sur la fiche')
+            ->assertSee('<button type="submit" class="btn btn-primary">', false)
+            ->assertSee('Soumettre la demande');
+
+        $response = $this->actingAs($admin)
             ->post(route('demandes.store'), [
                 'user_id' => $employee->id,
                 'car_id' => $car->id,
@@ -38,13 +54,34 @@ class ReservationFlowTest extends TestCase
                 'end_time' => '17:00',
                 'reason' => 'Business meeting',
                 'status' => 'pending',
-            ])
-            ->assertRedirect();
+            ]);
 
         $this->assertDatabaseHas('demandes', [
             'user_id' => $employee->id,
             'car_id' => $car->id,
         ]);
+
+        $demande = Demande::query()
+            ->where('user_id', $employee->id)
+            ->where('car_id', $car->id)
+            ->latest('id')
+            ->firstOrFail();
+
+        $response->assertCreated()
+            ->assertJson([
+                'success' => true,
+                'demande_id' => $demande->id,
+            ]);
+
+        $this->actingAs($admin)
+            ->get(route('mes-demandes.show', ['id' => $demande->id]))
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->get(route('demandes.print', ['id' => $demande->id]))
+            ->assertOk()
+            ->assertSee('DEM-' . str_pad((string) $demande->id, 5, '0', STR_PAD_LEFT))
+            ->assertSee('Direction');
     }
 
     /**

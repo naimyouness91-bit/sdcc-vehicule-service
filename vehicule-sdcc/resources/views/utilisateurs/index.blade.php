@@ -25,6 +25,7 @@
         margin: 0;
         padding: 16px 20px;
         box-sizing: border-box;
+        overflow-x: hidden;
     }
 
     /* ============ PAGE HEADER ============ */
@@ -146,6 +147,7 @@
         padding: 24px;
         margin-bottom: 24px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        overflow-x: hidden;
     }
 
     .panel-header {
@@ -332,13 +334,16 @@
     }
 
     /* ============ TABLE ============ */
-    .table-wrapper {
-        overflow-x: auto;
+    .table-wrapper,
+    .table-responsive {
+        overflow-x: hidden !important;
         border-radius: 8px;
         border: 1px solid var(--border);
+        width: 100%;
     }
 
     .users-table {
+        table-layout: fixed;
         width: 100%;
         border-collapse: collapse;
     }
@@ -348,8 +353,15 @@
         border-bottom: 2px solid var(--border);
     }
 
+    .users-table th,
+    .users-table td {
+        padding: 12px 10px;
+        font-size: 14px;
+        color: var(--text-primary);
+        vertical-align: middle;
+    }
+
     .users-table th {
-        padding: 14px 16px;
         text-align: left;
         font-size: 11px;
         font-weight: 700;
@@ -372,27 +384,33 @@
         background: var(--bg-light);
     }
 
-    .users-table td {
-        padding: 14px 16px;
-        font-size: 14px;
-        color: var(--text-primary);
-        vertical-align: middle;
-    }
-
-    .user-cell {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+    .users-table .cell-ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
     }
 
     .user-name {
         font-weight: 600;
         color: var(--text-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .user-email {
         color: var(--text-secondary);
-        font-size: 12px;
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .cell-service {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     /* ============ BADGES ============ */
@@ -437,59 +455,108 @@
         color: #991b1b;
     }
 
-    /* ============ ACTIONS CELL ============ */
-    .actions-cell {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
+    /* ============ ACTIONS COLUMN ============ */
+    .users-table th.actions-col,
+    .users-table td.actions-col {
+        width: 180px;
+        max-width: 220px;
+        text-align: center;
+        padding-left: 6px;
+        padding-right: 6px;
     }
 
-    .action-btn {
-        padding: 6px 10px;
-        font-size: 11px;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
+    .user-actions {
+        display: flex;
+        justify-content: center;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
     }
 
-    .action-edit {
+    .user-actions-form {
+        display: flex;
+        flex: 0 0 auto;
+        margin: 0;
+    }
+
+    .user-actions .btn {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1;
+        border-radius: 0.25rem;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        text-decoration: none;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, transform 0.15s ease;
+    }
+
+    .user-actions .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .user-actions .btn i {
+        font-size: 0.875rem;
+        line-height: 1;
+        pointer-events: none;
+    }
+
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .user-actions .btn-action-edit {
         background: #dbeafe;
         color: #1e40af;
     }
 
-    .action-edit:hover {
+    .user-actions .btn-action-edit:hover {
         background: #bfdbfe;
+        color: #1e3a8a;
     }
 
-    .action-reset {
+    .user-actions .btn-action-reset {
         background: #fed7aa;
         color: #b45309;
     }
 
-    .action-reset:hover {
+    .user-actions .btn-action-reset:hover {
         background: #fdba74;
+        color: #92400e;
     }
 
-    .action-toggle {
+    .user-actions .btn-action-toggle {
         background: #fecaca;
         color: #991b1b;
     }
 
-    .action-toggle:hover {
+    .user-actions .btn-action-toggle:hover {
         background: #fca5a5;
+        color: #7f1d1d;
     }
 
-    .action-delete {
+    .user-actions .btn-action-delete {
         background: #fee2e2;
         color: #7f1d1d;
     }
 
-    .action-delete:hover {
+    .user-actions .btn-action-delete:hover {
         background: #fecaca;
+        color: #450a0a;
     }
 
     /* ============ NO DATA ============ */
@@ -524,17 +591,29 @@
             min-width: unset;
         }
 
-        .actions-cell {
-            flex-direction: column;
-        }
-
-        .action-btn {
-            width: 100%;
-            justify-content: center;
-        }
     }
 
     @media (max-width: 768px) {
+        .users-table th,
+        .users-table td {
+            padding: 10px 6px;
+        }
+
+        .users-table th.actions-col,
+        .users-table td.actions-col {
+            width: 160px;
+            max-width: 220px;
+        }
+
+        .user-actions .btn {
+            width: 30px;
+            height: 30px;
+        }
+
+        .user-actions .btn i {
+            font-size: 0.8rem;
+        }
+
         .form-grid {
             grid-template-columns: 1fr;
         }
@@ -646,16 +725,24 @@
                 <p>Aucun utilisateur trouvé.</p>
             </div>
         @else
-            <div class="table-wrapper">
-                <table class="users-table">
+            <div class="table-wrapper table-responsive">
+                <table class="users-table table">
+                    <colgroup>
+                        <col style="width: 17%;">
+                        <col style="width: 24%;">
+                        <col style="width: 12%;">
+                        <col style="width: 17%;">
+                        <col style="width: 10%;">
+                        <col style="width: 180px;">
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th><i class="fas fa-user"></i>Nom</th>
-                            <th><i class="fas fa-envelope"></i>Email</th>
+                            <th class="cell-ellipsis"><i class="fas fa-user"></i>Nom</th>
+                            <th class="cell-ellipsis"><i class="fas fa-envelope"></i>Email</th>
                             <th><i class="fas fa-shield-halved"></i>Rôle</th>
-                            <th><i class="fas fa-briefcase"></i>Service</th>
+                            <th class="cell-ellipsis"><i class="fas fa-briefcase"></i>Service</th>
                             <th><i class="fas fa-circle-check"></i>État</th>
-                            <th><i class="fas fa-sliders"></i>Actions</th>
+                            <th class="actions-col"><i class="fas fa-sliders"></i>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -667,61 +754,62 @@
                                 $isActive = $user->is_active ?? true;
                             @endphp
                             <tr>
-                                <td>
-                                    <div class="user-cell">
-                                        <div class="user-name">{{ $user->name }}</div>
-                                    </div>
+                                <td class="cell-ellipsis" title="{{ $user->name }}">
+                                    <div class="user-name">{{ $user->name }}</div>
                                 </td>
-                                <td>
+                                <td class="cell-ellipsis" title="{{ $user->email }}">
                                     <div class="user-email">{{ $user->email }}</div>
                                 </td>
                                 <td>
                                     <span class="badge {{ $badgeClass }}">{{ $roleLabel }}</span>
                                 </td>
-                                <td>{{ $user->service ?? '-' }}</td>
+                                <td class="cell-ellipsis cell-service" title="{{ $user->service ?? '-' }}">
+                                    {{ $user->service ?? '-' }}
+                                </td>
                                 <td>
                                     <span class="badge {{ $isActive ? 'badge-active' : 'badge-inactive' }}">
                                         {{ $isActive ? '✓ Actif' : '✗ Inactif' }}
                                     </span>
                                 </td>
-                                <td>
-                                    <div class="actions-cell">
-                                        <!-- Edit: redirect to edit form (simple inline form fallback) -->
-                                        <form method="GET" action="{{ route('utilisateurs.edit', $user) }}" style="display:inline-block;margin:0;">
+                                <td class="actions-col">
+                                    <div class="user-actions">
+                                        <form method="GET" action="{{ route('utilisateurs.edit', $user) }}" class="user-actions-form">
                                             @csrf
-                                            <button type="button" class="action-btn action-edit" title="Modifier" onclick="location.href='{{ route('utilisateurs.edit', $user) }}'">
-                                                <i class="fas fa-edit"></i>Modifier
+                                            <button type="button" class="btn btn-sm btn-action-edit" title="Modifier" aria-label="Modifier" onclick="location.href='{{ route('utilisateurs.edit', $user) }}'">
+                                                <i class="fas fa-edit"></i>
+                                                <span class="visually-hidden">Modifier</span>
                                             </button>
                                         </form>
 
-                                        <!-- Reset password: redirect to form -->
-                                        <a href="{{ route('utilisateurs.reset-password-form', $user) }}" class="action-btn action-reset" title="Réinitialiser mot de passe">
-                                            <i class="fas fa-key"></i>Reset Pass
+                                        <a href="{{ route('utilisateurs.reset-password-form', $user) }}" class="btn btn-sm btn-action-reset" title="Reset Password" aria-label="Reset Password">
+                                            <i class="fas fa-key"></i>
+                                            <span class="visually-hidden">Reset Password</span>
                                         </a>
 
-                                        <!-- Toggle active/inactive -->
                                         @if($isActive)
-                                            <form method="POST" action="{{ route('utilisateurs.deactivate', $user) }}" style="display:inline-block;margin:0;">
+                                            <form method="POST" action="{{ route('utilisateurs.deactivate', $user) }}" class="user-actions-form">
                                                 @csrf
-                                                <button type="submit" class="action-btn action-toggle" title="Désactiver">
-                                                    <i class="fas fa-ban"></i>Désactiver
+                                                <button type="submit" class="btn btn-sm btn-action-toggle" title="Désactiver" aria-label="Désactiver">
+                                                    <i class="fas fa-ban"></i>
+                                                    <span class="visually-hidden">Désactiver</span>
                                                 </button>
                                             </form>
                                         @else
-                                            <form method="POST" action="{{ route('utilisateurs.reactivate', $user) }}" style="display:inline-block;margin:0;">
+                                            <form method="POST" action="{{ route('utilisateurs.reactivate', $user) }}" class="user-actions-form">
                                                 @csrf
-                                                <button type="submit" class="action-btn action-toggle" title="Activer">
-                                                    <i class="fas fa-check"></i>Activer
+                                                <button type="submit" class="btn btn-sm btn-action-toggle" title="Activer" aria-label="Activer">
+                                                    <i class="fas fa-check"></i>
+                                                    <span class="visually-hidden">Activer</span>
                                                 </button>
                                             </form>
                                         @endif
 
-                                        <!-- Delete -->
-                                        <form method="POST" action="{{ route('utilisateurs.destroy', $user) }}" style="display:inline-block;margin:0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')">
+                                        <form method="POST" action="{{ route('utilisateurs.destroy', $user) }}" class="user-actions-form" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="action-btn action-delete" title="Supprimer">
-                                                <i class="fas fa-trash"></i>Supprimer
+                                            <button type="submit" class="btn btn-sm btn-action-delete" title="Supprimer" aria-label="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                                <span class="visually-hidden">Supprimer</span>
                                             </button>
                                         </form>
                                     </div>

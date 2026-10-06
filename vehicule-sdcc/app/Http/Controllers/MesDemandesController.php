@@ -397,7 +397,9 @@ class MesDemandesController extends Controller
             return response()->json(['success' => true, 'demande_id' => $demande->id], 201);
         }
 
-        return redirect()->route('mes-demandes.index')->with('success', 'Votre demande de réservation a été soumise avec succès (ID #' . $demande->id . '). Vous recevrez une notification une fois qu\'elle sera approuvée.');
+        // Land on the consultation sheet of the demande that was just created,
+        // so its real ID is available immediately and the print button is live.
+        return redirect()->route('mes-demandes.show', ['id' => $demande->id])->with('success', 'Votre demande de réservation a été soumise avec succès (ID #' . $demande->id . '). Vous recevrez une notification une fois qu\'elle sera approuvée.');
     }
 
     public function approve(Request $request, $id)
@@ -465,6 +467,28 @@ class MesDemandesController extends Controller
         return view('mes-demandes.show', [
             'demande' => $demande,
             'user' => Auth::user()
+        ]);
+    }
+
+    /**
+     * Printable version of a single demande (standalone A4 sheet).
+     *
+     * Uses the exact same scoping as show(): an employee can only reach their
+     * own demandes, admins and super admins can reach any of them. Nothing is
+     * rendered that the viewer is not already allowed to see on screen.
+     */
+    public function printDemande($id)
+    {
+        $query = Demande::query()->with(['user.roles', 'car']);
+
+        if (!Auth::user()->hasAnyRole(['admin', 'super_admin'])) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $demande = $query->findOrFail($id);
+
+        return view('mes-demandes.print', [
+            'demande' => $demande,
         ]);
     }
 

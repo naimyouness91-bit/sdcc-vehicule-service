@@ -1,156 +1,232 @@
+@php
+    $reference = 'DEM-' . str_pad((string) $demande->id, 5, '0', STR_PAD_LEFT);
+    $statusLabels = [
+        \App\Models\Demande::STATUS_PENDING => 'En attente',
+        \App\Models\Demande::STATUS_APPROVED => 'Approuvée',
+        \App\Models\Demande::STATUS_REJECTED => 'Rejetée',
+        \App\Models\Demande::STATUS_CANCELLED => 'Annulée',
+    ];
+    $statusLabel = $statusLabels[$demande->status] ?? ucfirst((string) $demande->status);
+    $time = static fn ($value) => $value ? substr((string) $value, 0, 5) : '—';
+    $date = static fn ($value) => $value ? $value->format('d/m/Y') : '—';
+@endphp
+
 @extends('layouts.app')
-@section('title', 'SDCC')
+@section('title', 'Fiche de la demande ' . $reference)
 @section('content')
+<style>
+    .demande-sheet {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+    }
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-            <a href="{{ route('dashboard') }}">Tableau de bord</a>
-            <span> > </span>
-            <a href="{{ route('mes-demandes.index') }}">Mes demandes</a>
-            <span> > </span>
-            <span>Nouvelle demande</span>
-        </div>
+    .demande-sheet-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
 
-        <!-- Back Button -->
-        <a href="{{ route('mes-demandes.index') }}" class="back-btn">
-            <i class="fas fa-chevron-left"></i> Retour à mes demandes
-        </a>
+    .demande-reference {
+        margin: 0;
+        color: #2e7d32;
+        font-size: 14px;
+        font-weight: 700;
+    }
 
-        <!-- Page Title -->
-        <h1 class="page-title">Nouvelle demande</h1>
+    .demande-heading {
+        margin: 5px 0 0;
+        color: #222;
+        font-size: 24px;
+    }
 
-        <!-- Request Header Card -->
-        <div class="request-header">
-            <div class="request-header-left">
-                <div class="request-header-avatar">{{ strtoupper(substr($demande['employee_name'], 0, 1)) }}</div>
-                <div class="request-header-info">
-                    <h3><i class="fas fa-file-contract"></i> Demande de Véhicule de Service</h3>
-                    <p>SDCC — Moyens Généraux — Service pour organisation</p>
-                </div>
-            </div>
-            <div class="request-header-right">
-                {{ strtoupper($demande['employee_name']) }}
-                <div class="char-count">{{ strtolower($demande['employee_email']) }}</div>
-                <div class="request-header-status">
-                    {{ $demande['date_created'] }}
-                </div>
-            </div>
-            <div class="car-icon">
-                <i class="fas fa-car"></i>
-            </div>
-        </div>
+    .demande-status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
 
-        <!-- Form -->
-        <form method="POST" action="{{ route('mes-demandes.store') }}" class="form-container">
-            @csrf
+    .demande-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
 
-            <!-- Période demandée -->
-            <div class="form-section">
-                <div class="form-section-title">
-                    <i class="fas fa-calendar"></i> Période demandée
-                </div>
+    .demande-detail {
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 7px;
+    }
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>DATE D'USAGE <span class="required">*</span></label>
-                        <input type="date" name="start_date" value="{{ $demande['start_date'] }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>HEURE DE DÉPART <span class="required">*</span></label>
-                        <input type="time" name="start_time" value="08:00" required>
-                    </div>
-                </div>
+    .demande-detail--wide {
+        grid-column: 1 / -1;
+    }
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>DATE DE RESTITUTION <span class="required">*</span></label>
-                        <input type="date" name="end_date" value="{{ $demande['end_date'] }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>HEURE DE RESTITUTION</label>
-                        <input type="time" name="end_time" value="05:00 PM">
-                        <div class="hint">Optionnel</div>
-                    </div>
-                </div>
+    .demande-detail-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+    }
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>HEURE DE RETOUR PRÉVUE</label>
-                        <input type="time" name="return_time" value="05:00 PM">
-                        <div class="hint">Heure retour estimée (optionnel demandeur)</div>
-                    </div>
-                </div>
-            </div>
+    .demande-detail-value {
+        color: #222;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+    }
 
-            <!-- Informations du déplacement -->
-            <div class="form-section">
-                <div class="form-section-title">
-                    <i class="fas fa-map-marker-alt"></i> Informations du déplacement
-                </div>
+    .demande-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 22px;
+    }
 
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label>DESTINATION <span class="required">*</span></label>
-                        <input type="text" name="destination" value="{{ $demande['destination'] }}" placeholder="Ville — lieu précis (ex: Casablanca — Siège client ABC)" required>
-                    </div>
-                </div>
+    .demande-print-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border: 0;
+        border-radius: 5px;
+        background: #2e7d32;
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+    }
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>KILOMÉTRAGE PRÉVISIONNEL</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="number" name="kilometers" value="{{ $demande['kilometers'] }}" placeholder="ex: 240">
-                            <input type="text" value="km aller-retour" style="flex: 1;" disabled>
-                        </div>
-                        <div class="hint">Estimation aller-retour</div>
-                    </div>
-                </div>
-            </div>
+    .demande-print-button:hover {
+        background: #256428;
+        color: #fff;
+    }
 
-            <!-- Motif du déplacement -->
-            <div class="form-section">
-                <div class="form-section-title">
-                    <i class="fas fa-comment-dots"></i> Motif du déplacement
-                </div>
+    @media (max-width: 640px) {
+        .demande-sheet {
+            padding: 16px;
+        }
 
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label>MOTIF <span class="required">*</span></label>
-                        <textarea name="reason" required placeholder="Décrire l'objet professionnel de ce déplacement en détail...">{{ $demande['reason'] }}</textarea>
-                        <div class="char-count"><span id="charCount">0</span> / 500</div>
-                    </div>
-                </div>
-            </div>
+        .demande-sheet-header {
+            flex-direction: column;
+            gap: 12px;
+        }
 
-            <!-- Form Actions -->
-            <div class="form-actions">
-                <a href="{{ route('mes-demandes.index') }}" class="btn btn-cancel">
-                    <i class="fas fa-times"></i> Annuler
-                </a>
-                <button type="button" class="btn btn-draft" onclick="window.print()">
-                    <i class="fas fa-print"></i> Imprimer
-                </button>
-                <button type="submit" class="btn btn-submit">
-                    <i class="fas fa-check"></i> Soumettre la demande
-                </button>
-            </div>
-        </form>
+        .demande-details {
+            grid-template-columns: 1fr;
+        }
+
+        .demande-detail--wide {
+            grid-column: auto;
+        }
+    }
+</style>
+
+<div class="main-content">
+    <div class="breadcrumb">
+        <a href="{{ route('dashboard') }}">Tableau de bord</a>
+        <span> &gt; </span>
+        <a href="{{ route('mes-demandes.index') }}">Mes demandes</a>
+        <span> &gt; </span>
+        <span>{{ $reference }}</span>
     </div>
 
-    <script>
-        // Char count for textarea
-        const textarea = document.querySelector('textarea[name="reason"]');
-        const charCount = document.querySelector('#charCount');
-        
-        textarea.addEventListener('input', function() {
-            charCount.textContent = this.value.length;
-        });
-        
-        // Initialize character count
-        charCount.textContent = textarea.value.length;
-    </script>
+    <a href="{{ route('mes-demandes.index') }}" class="back-btn">
+        <i class="fas fa-chevron-left"></i> Retour à mes demandes
+    </a>
 
+    <section class="demande-sheet" aria-labelledby="demande-heading">
+        <header class="demande-sheet-header">
+            <div>
+                <p class="demande-reference">{{ $reference }}</p>
+                <h1 class="demande-heading" id="demande-heading">Fiche de la demande</h1>
+                @if ($demande->created_at)
+                    <p>Créée le {{ $demande->created_at->format('d/m/Y à H:i') }}</p>
+                @endif
+            </div>
+            <span class="demande-status">{{ $statusLabel }}</span>
+        </header>
+
+        <div class="demande-details">
+            <div class="demande-detail">
+                <span class="demande-detail-label">Demandeur</span>
+                <div class="demande-detail-value">{{ $demande->user?->name ?? '—' }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">E-mail</span>
+                <div class="demande-detail-value">{{ $demande->user?->email ?? '—' }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Service</span>
+                <div class="demande-detail-value">{{ $demande->user?->service ?: '—' }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Véhicule</span>
+                <div class="demande-detail-value">
+                    {{ $demande->car?->name ?? '—' }}
+                    @if ($demande->car?->model)
+                        — {{ $demande->car->model }}
+                    @endif
+                    @if ($demande->car?->matricule)
+                        ({{ $demande->car->matricule }})
+                    @endif
+                </div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Date de départ</span>
+                <div class="demande-detail-value">{{ $date($demande->start_date) }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Heure de départ</span>
+                <div class="demande-detail-value">{{ $time($demande->start_time) }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Date de restitution</span>
+                <div class="demande-detail-value">{{ $date($demande->end_date) }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Heure de restitution</span>
+                <div class="demande-detail-value">{{ $time($demande->end_time) }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Heure de retour prévue</span>
+                <div class="demande-detail-value">{{ $time($demande->return_time) }}</div>
+            </div>
+            <div class="demande-detail">
+                <span class="demande-detail-label">Kilométrage prévu</span>
+                <div class="demande-detail-value">
+                    {{ $demande->kilometers !== null ? number_format($demande->kilometers, 0, ',', ' ') . ' km' : '—' }}
+                </div>
+            </div>
+            <div class="demande-detail demande-detail--wide">
+                <span class="demande-detail-label">Destination</span>
+                <div class="demande-detail-value">{{ $demande->destination ?: '—' }}</div>
+            </div>
+            <div class="demande-detail demande-detail--wide">
+                <span class="demande-detail-label">Motif</span>
+                <div class="demande-detail-value">{{ $demande->reason ?: '—' }}</div>
+            </div>
+        </div>
+
+        <div class="demande-actions">
+            <a href="{{ route('demandes.print', ['id' => $demande->id]) }}"
+               target="_blank" rel="noopener"
+               class="demande-print-button">
+                <i class="fas fa-print"></i> Imprimer
+            </a>
+        </div>
+    </section>
+</div>
 @endsection
-

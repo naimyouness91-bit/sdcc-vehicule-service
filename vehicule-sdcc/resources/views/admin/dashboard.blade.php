@@ -471,6 +471,27 @@
         color: #66BB6A;
     }
 
+    .summary-value.total { color: #1e293b; }
+    .summary-value.pending { color: #f59e0b; }
+    .summary-value.approved { color: #16a34a; }
+    .summary-value.rejected { color: #dc2626; }
+    .summary-value.cancelled { color: #64748b; }
+    .summary-value.vehicles { color: #0d9488; }
+
+    .summary-label i {
+        margin-right: 6px;
+        width: 14px;
+        text-align: center;
+    }
+
+    .analytics-card-subtitle {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 500;
+        margin: -12px 0 18px;
+        text-transform: capitalize;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
         .dashboard-content-wrapper {
@@ -727,28 +748,38 @@
     </div>
 
     <!-- Monthly Summary -->
+    @php $summary = $analytics['monthly_summary'] ?? []; @endphp
     <div class="analytics-card">
         <h3 class="analytics-card-title"><i class="fas fa-chart-line"></i> Résumé mensuel</h3>
+        <p class="analytics-card-subtitle">{{ $analytics['month_label'] ?? '' }}</p>
         <div class="summary-list">
             <div class="summary-item">
-                <span class="summary-label">Km total planifiés</span>
-                <span class="summary-value km">{{ $analytics['total_km'] ?? '0 km' }}</span>
+                <span class="summary-label"><i class="fas fa-clipboard-list"></i>Total demandes</span>
+                <span class="summary-value total">{{ $summary['total'] ?? 0 }}</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label">Taux d'approbation</span>
-                <span class="summary-value approval">{{ $analytics['approval_rate'] ?? '0%' }}</span>
+                <span class="summary-label"><i class="fas fa-check-circle"></i>Approuvées</span>
+                <span class="summary-value approved">{{ $summary['approved'] ?? 0 }}</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label">Durée moy. demande</span>
-                <span class="summary-value duration">{{ $analytics['avg_duration'] ?? '0 jours' }}</span>
+                <span class="summary-label"><i class="fas fa-clock"></i>En attente</span>
+                <span class="summary-value pending">{{ $summary['pending'] ?? 0 }}</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label">Véhicule le + utilisé</span>
-                <span class="summary-value vehicle">{{ $analytics['top_vehicle'] ?? 'N/A' }}</span>
+                <span class="summary-label"><i class="fas fa-times-circle"></i>Rejetées</span>
+                <span class="summary-value rejected">{{ $summary['rejected'] ?? 0 }}</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label">Employé le + actif</span>
-                <span class="summary-value employee">{{ $analytics['top_employee'] ?? 'N/A' }}</span>
+                <span class="summary-label"><i class="fas fa-ban"></i>Annulées</span>
+                <span class="summary-value cancelled">{{ $summary['cancelled'] ?? 0 }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label"><i class="fas fa-percent"></i>Taux d'approbation</span>
+                <span class="summary-value approval">{{ $summary['approval_rate'] ?? 0 }}%</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label"><i class="fas fa-car"></i>Véhicules utilisés</span>
+                <span class="summary-value vehicles">{{ $summary['vehicles_used'] ?? 0 }}</span>
             </div>
         </div>
     </div>

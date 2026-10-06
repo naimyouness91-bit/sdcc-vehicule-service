@@ -128,6 +128,13 @@
     }
     .btn-danger:hover { background: #e53935; color: white; border-color: #e53935; }
 
+    .btn-print {
+        background: white;
+        color: #2e7d32;
+        border: 1.5px solid #2e7d32;
+    }
+    .btn-print:hover { background: #2e7d32; color: white; }
+
     @media (max-width: 640px) {
         .detail-grid { grid-template-columns: 1fr; }
         .detail-header { flex-direction: column; gap: 12px; }
@@ -258,6 +265,10 @@
             </a>
             <a href="{{ route('admin.reservations.edit', $reservation->id) }}" class="btn btn-edit">
                 <i class="fas fa-edit"></i> Modifier
+            </a>
+            <a href="{{ route('demandes.print', ['id' => $reservation->id]) }}"
+               target="_blank" rel="noopener" class="btn btn-print">
+                <i class="fas fa-print"></i> Imprimer
             </a>
             <button class="btn btn-danger" id="deleteBtn"
                     data-id="{{ $reservation->id }}"

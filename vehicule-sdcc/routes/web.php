@@ -242,6 +242,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/mes-demandes', [MesDemandesController::class, 'store'])->middleware('permission:reservations.own.manage')->name('mes-demandes.store');
         Route::post('/demandes', [MesDemandesController::class, 'store'])->middleware('permission:reservations.own.manage')->name('demandes.store');
         Route::get('/mes-demandes/{id}', [MesDemandesController::class, 'show'])->middleware('permission:reservations.own.manage')->name('mes-demandes.show');
+        Route::get('/mes-demandes/{id}/print', [MesDemandesController::class, 'printDemande'])->middleware('permission:reservations.own.manage')->name('demandes.print');
         Route::post('/mes-demandes/{id}/cancel', [MesDemandesController::class, 'cancelOwn'])->middleware('permission:reservations.own.manage')->name('mes-demandes.cancel');
         Route::put('/mes-demandes/{id}', [MesDemandesController::class, 'update'])->middleware('permission:reservations.own.manage')->name('mes-demandes.update');
         Route::put('/demandes/{id}', [MesDemandesController::class, 'update'])->middleware('permission:reservations.own.manage')->name('demandes.update');

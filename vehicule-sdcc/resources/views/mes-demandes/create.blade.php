@@ -284,27 +284,6 @@
         transform: translateY(0);
     }
 
-    .btn-print {
-        background: white;
-        color: #FFA726;
-        border: 2px solid #FFA726;
-    }
-
-    .btn-print:hover {
-        background: #FFF3E0;
-        border-color: #E65100;
-        color: #E65100;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(255, 167, 38, 0.2);
-    }
-
-    .print-hint {
-        font-size: 11px;
-        color: #4CAF50;
-        font-weight: 600;
-        margin-top: 3px;
-    }
-
     .print-sheet {
         display: none;
     }
@@ -647,9 +626,6 @@
             <a href="{{ route('mes-demandes.index') }}" class="btn btn-secondary">
                 <i class="fas fa-times-circle"></i> Annuler
             </a>
-            <button type="button" class="btn btn-print" onclick="window.print()">
-                <i class="fas fa-print"></i> Imprimer
-            </button>
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-paper-plane"></i> Soumettre la demande
             </button>

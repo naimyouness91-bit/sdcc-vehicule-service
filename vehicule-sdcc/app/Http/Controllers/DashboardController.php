@@ -8,7 +8,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -97,8 +96,9 @@ class DashboardController extends Controller
             ->values()
             ->toArray();
 
-        $destinationColors = ['#FFA726', '#4CAF50', '#FF9800', '#66BB6A', '#FFB74D'];
-        $destinationRaw = (clone $monthlyDemandes)
+        // Top destinations — toutes les demandes (données réelles, tri décroissant)
+        $destinationColors = ['#2E7D32', '#43A047', '#66BB6A', '#FFA726', '#FF9800'];
+        $destinationRaw = Demande::query()
             ->selectRaw('destination, COUNT(*) as total')
             ->whereNotNull('destination')
             ->where('destination', '!=', '')
@@ -115,60 +115,53 @@ class DashboardController extends Controller
             ];
         })->toArray();
 
-        $maxDestination = max(1, (int) $destinationRaw->max('total'));
+        $maxDestination = $destinationRaw->isEmpty()
+            ? 1
+            : max(1, (int) $destinationRaw->max('total'));
 
-        $approvedCount = (clone $monthlyDemandes)->where('status', Demande::STATUS_APPROVED)->count();
-        $approvalBase = max(1, $stats['total_demandes']);
-        $approvalRate = (int) round(($approvedCount / $approvalBase) * 100);
+        // Résumé mensuel — demandes créées durant le mois en cours
+        $monthlyCreated = Demande::query()
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth(),
+            ]);
 
-        $driver = DB::getDriverName();
-        if ($driver === 'sqlite') {
-            $avgDurationDays = (clone $monthlyDemandes)
-                ->selectRaw('AVG((julianday(end_date) - julianday(start_date)) + 1) as avg_days')
-                ->value('avg_days');
-        } else {
-            $avgDurationDays = (clone $monthlyDemandes)
-                ->selectRaw('AVG(DATEDIFF(end_date, start_date) + 1) as avg_days')
-                ->value('avg_days');
-        }
+        $monthlyCounts = (clone $monthlyCreated)
+            ->selectRaw(
+                'COUNT(*) as total, ' .
+                "SUM(CASE WHEN status = '" . Demande::STATUS_PENDING . "' THEN 1 ELSE 0 END) as pending, " .
+                "SUM(CASE WHEN status = '" . Demande::STATUS_APPROVED . "' THEN 1 ELSE 0 END) as approved, " .
+                "SUM(CASE WHEN status = '" . Demande::STATUS_REJECTED . "' THEN 1 ELSE 0 END) as rejected, " .
+                "SUM(CASE WHEN status = '" . Demande::STATUS_CANCELLED . "' THEN 1 ELSE 0 END) as cancelled"
+            )
+            ->first();
 
-        $topVehicleRow = (clone $monthlyDemandes)
-            ->selectRaw('car_id, COUNT(*) as total')
+        $monthlyTotal = (int) ($monthlyCounts->total ?? 0);
+        $monthlyApproved = (int) ($monthlyCounts->approved ?? 0);
+        $approvalRate = $monthlyTotal > 0
+            ? (int) round(($monthlyApproved / $monthlyTotal) * 100)
+            : 0;
+
+        $vehiclesUsed = (clone $monthlyCreated)
             ->whereNotNull('car_id')
-            ->groupBy('car_id')
-            ->orderByDesc('total')
-            ->first();
+            ->distinct()
+            ->count('car_id');
 
-        $topVehicle = 'N/A';
-        if ($topVehicleRow) {
-            $car = Car::query()->find($topVehicleRow->car_id);
-            if ($car) {
-                $topVehicle = trim($car->name . ' ' . ($car->matricule ?? ''));
-            }
-        }
-
-        $topEmployeeRow = (clone $monthlyDemandes)
-            ->selectRaw('user_id, COUNT(*) as total')
-            ->whereNotNull('user_id')
-            ->groupBy('user_id')
-            ->orderByDesc('total')
-            ->first();
-
-        $topEmployee = 'N/A';
-        if ($topEmployeeRow) {
-            $topEmployee = User::query()->whereKey($topEmployeeRow->user_id)->value('name') ?? 'N/A';
-        }
-
-        $totalKm = (int) ((clone $monthlyDemandes)->sum('kilometers') ?? 0);
+        $monthlySummary = [
+            'total' => $monthlyTotal,
+            'approved' => $monthlyApproved,
+            'pending' => (int) ($monthlyCounts->pending ?? 0),
+            'rejected' => (int) ($monthlyCounts->rejected ?? 0),
+            'cancelled' => (int) ($monthlyCounts->cancelled ?? 0),
+            'approval_rate' => $approvalRate,
+            'vehicles_used' => $vehiclesUsed,
+        ];
 
         $analytics = [
             'destinations' => $destinations,
             'max_destination' => $maxDestination,
-            'total_km' => number_format($totalKm, 0, ',', ' ') . ' km',
-            'approval_rate' => $approvalRate . '%',
-            'avg_duration' => number_format((float) ($avgDurationDays ?? 0), 1, '.', '') . ' jours',
-            'top_vehicle' => $topVehicle,
-            'top_employee' => $topEmployee,
+            'monthly_summary' => $monthlySummary,
+            'month_label' => Carbon::now()->locale('fr')->translatedFormat('F Y'),
         ];
 
         // Get data for modals
