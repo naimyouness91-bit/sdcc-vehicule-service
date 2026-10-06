@@ -17,3 +17,20 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Laravel caches / generated files
+/storage/framework/views/*.php
+/storage/logs/*.log
+*.log
+
+# Local test / debug artifacts
+/logs-dump.txt
+/rate-test.txt
+/test-*.txt
+/scripts/*.log
+/scripts/*.txt
+/scripts/*.html
+/tools/cookies*.txt
+
+# Contains a hardcoded local password - keep it out of the repository
+/reset_admin_passwords.php
